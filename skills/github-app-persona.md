@@ -1,6 +1,6 @@
 ---
 name: github-app-persona
-description: Replace a classic PAT with a GitHub App installation token for org-wide automation. Trigger when the user asks for a bot identity, hits PAT-scope walls (admin:org, workflows), wants to purge personal credentials from the machine, needs commit-time credentials without cached HTTPS auth, or asks to create/install a GitHub App. Covers the app-creation form values, 1Password stash, `gh-app` wrapper script that mints installation tokens on demand, git credential helper that feeds the same token to plain `git`, alias-`gh` install, and the noreply-email swap.
+description: Replace a classic PAT with a GitHub App installation token for org-wide automation. Trigger when the user asks for a bot identity, hits PAT-scope walls (admin:org, workflows), wants to purge personal credentials from the machine, needs commit-time credentials without cached HTTPS auth, or asks to create/install a GitHub App. Covers the app-creation form values, 1Password stash, `gh-app` wrapper script that mints installation tokens on demand, git credential helper that feeds the same token to plain `git`, alias-`gh` install, the noreply-email swap, and the mint-verify-stash-destroy order every credential rotation must follow.
 ---
 
 # GitHub App persona
@@ -127,3 +127,34 @@ app's synthetic identity:
   private key on the app's settings page and delete the old one; existing
   cached installation tokens continue to work for their remaining TTL but
   cannot be renewed.
+
+## Safe credential rotation
+
+Applies to the pem here, to any bao root token, and to any credential where
+"minting" and "destroying" are separate calls. Rotating credentials without
+this order is how a workspace loses access to its own secret store.
+
+**Stash first, verify readback, then destroy — every time, in that order.**
+
+1. **Mint the new credential.** Do not touch the old one yet.
+2. **Verify the new credential works.** A live capability check (`gh-app api
+   /rate_limit`, `bao token lookup`) that proves the new credential is what
+   the server sees, not what the shell claims.
+3. **Stash it.** For 1Password, the category name is the exact string
+   `"API Credential"` (spaces, title case) — `api-credential` is rejected.
+   For pems, attach as a file on an `API_CREDENTIAL` item.
+4. **Read it back.** `op read op://Vault/<id>/credential` and compare byte
+   for byte to what you stashed. A stash that succeeds silently and stores
+   the wrong bytes is the failure mode `--dry-run` cannot catch.
+5. **Mint a second one when the credential is a break-glass root.** Save it
+   too, on a separate 1Password item. Losing one item to a corruption or
+   accidental delete then leaves you with the other.
+6. **Only now** destroy the old credential — revoke the token, delete the
+   pem, whichever it is.
+
+Shell-scope trap the retro is written against: the Bash tool in this harness
+does not persist environment variables between calls, so a token minted in
+one invocation and only kept in `$NEW_ID` is lost the moment that shell
+exits. Any credential value that must survive more than one tool call has
+to be either stashed (step 3 above) or persisted to a mode-0600 file in the
+session scratchpad — never held only in an env var across calls.
