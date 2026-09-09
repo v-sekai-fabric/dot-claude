@@ -26,7 +26,7 @@ Pair every physical measurement with a household-object equivalent (`## How Meas
 
 Code → GitHub. Weights and datasets → Hugging Face.
 
-- Code, RFDs, scripts, docs → `github.com/weftspun/*` or `github.com/v-sekai-fabric/*`.
+- Code, RFDs, scripts, docs → `github.com/weftspun/*` or `github.com/V-Sekai-fire/*`.
 - Weights, corpora, fixtures, generated artifacts → `huggingface.co/chibifire/*`.
 - Cross-link both directions: a HF artifact's README points at its GitHub apparatus; the GitHub README's fetch instructions point at the HF path.
 - A 30 GiB checkpoint that would otherwise sit on one desk uncommitted → `chibifire/<name>-artifacts` (private model repo). See `hailo-ugen300-shelved` and `llada-diffusion-lm-shelved` memory entries.
