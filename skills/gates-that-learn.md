@@ -7,49 +7,64 @@ description: Write checks that cannot quietly pass, and grow the suite from ever
 
 `CLAUDE.md` already says a check that passes on known-broken input is
 decoration, and that a silent skip reads exactly like a pass. Those rules are
-correct and easy to violate anyway — they were violated ten times in one
-session by someone who had read them. Rules are advice a person must remember;
-this is the mechanism.
+right and easy to violate anyway — they were violated eleven times in one
+session by someone who had read them. A rule is advice you must recall at the
+moment you are writing a one-line grep. This is the mechanism instead.
+
+The implementation lives in `2-contract/manuals-weftspun`, in Elixir, beside
+the RFD DSL it is modelled on.
 
 ## The property
 
 A gate is fragile when a defect gets past it and nothing changes. It is
-antifragile when the escape makes it stronger. So: **when something gets past a
-check, the check's suite gains a control, permanently.**
+antifragile when the escape makes it stronger. So when something gets past a
+check, the suite gains a control, permanently.
 
-`lib/escapes.tsv` is that record — one row per escape, naming what the check
-reported and what was actually true. `lib/check_selftest.sh` replays it. The
-suite only grows.
+`ESCAPES.exs` is that record, written through the `RFD.Escapes` DSL the same
+way `SERIALS.exs` uses `RFD.Register`. `test/escapes_test.exs` replays it. A
+row naming an unknown guard is rejected, and so is one where `reported` and
+`actual` match — a row without a gap records no escape.
 
-## Use the primitives
+## Prefer removing the choice to guarding it
 
-    . "$(dirname "$0")/../lib/check.sh"
+`RFD.Corpora` is the facade over every register-like corpus. It has no
+single-corpus entry point, because the escape it exists for was
+`grep 2235 SERIALS.exs -> 0 hits`, concluded as "no register names this
+serial", while the serial sat in `SERIALS-vsekai-fabric.exs`. A guard would
+have caught that; a facade means it cannot be expressed.
 
-| primitive | stops |
+`files/1` raises on an empty set rather than answering not-found. An empty
+search reporting not-found is the same silent pass in another costume.
+
+## The guards
+
+`RFD.Checks`, each naming the incident that produced it.
+
+| guard | stops |
 | --- | --- |
-| `run_checked` | reading an exit code from the wrong process |
+| `run_checked` | an exit code read from the wrong process |
 | `require_nonempty` | an empty result reported as a pass |
-| `require_file` | concluding from a file that was never opened |
-| `require_corpus` | searching one of several places and calling it absent |
-| `require_engaged` | a control whose threshold was never crossed |
+| `require_file` | concluding from a file never opened |
+| `require_corpus` | searching one of several places |
+| `require_engaged` | a control whose threshold never fired |
 | `expect_fail` | a gate with no negative control |
 | `require_precondition` | an unmet precondition reported as a skip |
+| `require_literal` | text the shell rewrote |
 
-Each carries the incident that produced it. Read them; the failures are more
-instructive than the API.
+## Every one of these has the same shape
 
-## The shape of every one of these
-
-A check that cannot distinguish its outcomes. `0 hits` from a file that does not
-exist looks exactly like `0 hits` from a file that does. An empty token compares
-unequal to the previous one just as a fresh one does. `cmd | tail` exits 0
-whatever `cmd` did. The primitive's whole job is to make those two states
-different.
+A check that cannot distinguish its outcomes. Zero hits from a file that does
+not exist reads exactly like zero hits from a file that does. An empty token
+compares unequal to the previous one just as a fresh one does. `cmd | tail`
+exits zero whatever `cmd` did. The guard's whole job is to make those two
+states different.
 
 ## When a defect escapes
 
-1. Add a row to `lib/escapes.tsv` saying what the check reported and what was true.
-2. If an existing primitive would have caught it, use it and move on.
-3. If none would have, write one, and add its control to `check_selftest.sh`.
+1. Add an `escape` row to `ESCAPES.exs` saying what the check reported and what
+   was true.
+2. If an existing guard would have caught it, use that guard and move on.
+3. If none would have, ask first whether a facade removes the choice. Only
+   write a new guard when it does not.
 
 Step 3 is the antifragile part. Skipping it means the next instance is silent too.
