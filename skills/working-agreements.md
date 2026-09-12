@@ -87,7 +87,7 @@ Blocklist table in CLAUDE.md; arguments in BLOCKLIST.md; `check_blocklist_detail
 
 - Training data only. Validation and test splits are strictly held out — not consulted while developing.
 - `coco_person_commercial_val2017` is the blinded holdout. Never generate from it; anything derived from it inherits its status (`6-datasource/coco-ood-eval`).
-- Synthetic data is two classes: _constructed_ (rendered deterministically from source assets we hold — ordinary training data) vs _generated_ (sampled from a generative model — 5 conditions in CLAUDE.md; condition 5 bars quantised generators from producing corpus data).
+- Synthetic data is two classes: _constructed_ (rendered deterministically from source assets we hold — ordinary training data) vs _generated_ (sampled from a generative model — four conditions in CLAUDE.md). A fifth condition barring quantised generators from corpus data is retracted; it does not get re-asserted.
 
 ## Archive formats
 

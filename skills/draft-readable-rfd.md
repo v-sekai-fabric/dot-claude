@@ -6,7 +6,7 @@ tools: Read, Write, Edit
 
 # Draft a readable RFD
 
-An RFD is read cold. A reader arrives at `rfd/2182-*/README.md`
+An RFD is read cold. A reader arrives at the rendered `rfd/2182-*/README.md`
 with no prior tabs open, no memory of neighbouring RFDs, no
 workspace-private vocabulary. Three rules make that reader's first
 pass carry the answer.
@@ -105,10 +105,11 @@ one file cold, not the whole set.
 
 ## What this skill does not fix
 
-- The 40-line cap on `README.md` (RFD 1000). Move detail to
-  `DETAILS.md` if the rules above push the file over.
-- Cross-references *between* RFDs — the linker check
-  (`check_rfd_links.py`, if it exists) is a separate concern.
+- The 40-line cap on the rendered `README.md` (RFD 1000). Move detail
+  into a `section`, which renders to `DETAILS.md`, if the rules above
+  push the file over.
+- Cross-references *between* RFDs. No linker check ships; treat it as a
+  separate concern.
 - Retraction narratives inside CLAUDE.md, PITFALLS.md,
   KEYPOINTS.md — those are working-agreement documents where
   meta-history is load-bearing.
@@ -116,8 +117,9 @@ one file cold, not the whole set.
 ## When to invoke
 
 - Drafting a new RFD.
-- Editing an existing RFD's `README.md` in a substantive way (not
-  a state flip or a one-line fix).
+- Editing an existing RFD's `.exs` source in a substantive way (not
+  a state flip or a one-line fix). `README.md` and `DETAILS.md` are
+  `mix rfd.render` artifacts (RFD 2232) and are never hand-edited.
 - Superseding an RFD.
 - Reviewing an RFD PR — apply the three rules as a checklist.
 

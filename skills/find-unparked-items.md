@@ -31,10 +31,11 @@ of the answer), or "is anything blocking budget X".
 if one is already present). Subject lines with `[PARKED · ...]` are
 parked; without it, unparked.
 
-**RFD READMEs** — `2-contract/manuals-weftspun/rfd/<N>-<slug>/README.md`.
-An unparked RFD has `State: discussion` (or a further-along canonical
-state) AND no `Shelved YYYY-MM-DD:` paragraph in the body. A shelved RFD
-carries both.
+**RFD sources** — `2-contract/manuals-weftspun/rfd/<N>-<slug>.exs`. The
+`.exs` is what is tracked; `README.md` is a `mix rfd.render` artifact
+(RFD 2232) and is absent until the render runs. An unparked RFD has
+`state :discussion` (or a further-along canonical state) AND no
+`Shelved YYYY-MM-DD:` paragraph in the body. A shelved RFD carries both.
 
 ## Pipeline
 

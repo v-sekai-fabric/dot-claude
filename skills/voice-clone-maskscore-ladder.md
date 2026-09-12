@@ -16,7 +16,7 @@ The user names a speech-clip source (a SpeakingFaces subject, another CC-BY audi
 
 The reference implementation is in `6-datasource/anny-render-corpus`, run under the `anny-mac`, `asr`, and `tts` pixi environments.
 
-**1. Register the RFD serial.** Next unused serial in `2-contract/manuals-weftspun/SERIALS-vsekai-fabric.usda` under arc `1.3.6.1.4.1.66606.1.2`. Add `def "S<N>"` with a kebab-case `slug`, create `rfd/<N>-<slug>/README.md` (≤40 lines, canary sentence, `spine` to urn:oid:1.3.6.1.4.1.66606.1.1.1173).
+**1. Register the RFD serial.** Next unused serial in `2-contract/manuals-weftspun/SERIALS-vsekai-fabric.exs` under arc `1.3.6.1.4.1.66606.1.2`. Add a `serial <N>, "<kebab-case-slug>"` row to `allocated do`, and write `rfd/<N>-<slug>.exs` (`drafted_by :ai` for the canary, `related` carrying the spine to urn:oid:1.3.6.1.4.1.66606.1.1.1173; the rendered README stays under 40 lines).
 
 **2. Transcribe with the 12-track ASR panel** (`emit_10track_panel.py`): parakeet (CC-BY-4.0), whisper large-v3, voxtral, wav2vec2, gemma-auto (text tracks) + gemma-gbnf, voxtral-ipa, ipa-whisper-small, ipa-whisper-base, allosaurus (ipa tracks). Then run `add_allosaurus_control.py` for allosaurus-eng/rus phone-inventory controls.
 
