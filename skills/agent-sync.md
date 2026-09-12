@@ -116,7 +116,7 @@ done
 ## Fallback — no bao reachable
 
 If Tailscale is down or bao is sealed, drop to the local `flock`-guarded jsonl:
-`~/.claude/agent-sync/registry.jsonl`, one JSON row per agent, most-recent-wins per `session_id`. Same schema. The `agent_sync.py` helper reads/writes both when both are available.
+`~/.claude/agent-sync/registry.jsonl`, one JSON row per agent, most-recent-wins per `session_id`. Same schema. No helper ships for this; the file is read and written directly, under `flock`.
 
 ## When you can skip everything
 
@@ -130,4 +130,3 @@ Any op crossing any of those thresholds — OR any `ListAgents` result showing a
 - RFD 2142 — Bao PKI zerotrust service TLS
 - RFD 2195 — weftspun-bao Tailscale sidecar
 - RFD 2196 — HuggingFace dataset viewer rules
-- Companion helper: `agent_sync.py` (flock+jsonl module, bao-KV shim optional)
